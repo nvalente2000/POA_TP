@@ -1,11 +1,16 @@
 package com.poa.tp.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -21,7 +26,11 @@ public class Paciente implements Serializable {
 	private String apellido; 
 	private String hashClave; 
 	private Boolean identidadVerificada;
-
+	
+	@JsonManagedReference
+	@OneToMany(mappedBy = "paciente")
+	private List<Turno> turnos = new ArrayList<Turno>();
+	
 	public Paciente() {
 		super();
 	}
@@ -73,6 +82,14 @@ public class Paciente implements Serializable {
 	
 	public void setIdentidadVerificada(Boolean identidadVerificada) {
 		this.identidadVerificada = identidadVerificada;
+	}
+
+	public List<Turno> getTurnos() {
+		return turnos;
+	}
+
+	public void setTurnos(List<Turno> turnos) {
+		this.turnos = turnos;
 	}
 	
 }
