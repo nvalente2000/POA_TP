@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -27,7 +27,7 @@ public class Paciente implements Serializable {
 	private String hashClave; 
 	private Boolean identidadVerificada;
 	
-	@JsonManagedReference
+	@JsonBackReference
 	@OneToMany(mappedBy = "paciente")
 	private List<Turno> turnos = new ArrayList<Turno>();
 	
