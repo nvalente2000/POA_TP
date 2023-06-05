@@ -2,8 +2,8 @@ package com.poa.tp.entities.estado_turno;
 
 import java.io.Serializable;
 
-import com.poa.tp.entities.enums.TipoEstado;
-import com.poa.tp.entities.exceptions.EstadoTurnoException;
+import com.poa.tp.entities.enums.TipoEstadoTurno;
+import com.poa.tp.entities.exceptions.TipoEstadoTurnoException;
 
 public class EstadoTurnoConfirmado implements EstadoTurno, Serializable {
 
@@ -21,27 +21,28 @@ public class EstadoTurnoConfirmado implements EstadoTurno, Serializable {
 	}
 	
 	@Override
-	public void reservar() throws EstadoTurnoException {
-		throw new EstadoTurnoException("Warning: Operacion indisponible para el estado Confirmado.");
+	public void reservar() throws TipoEstadoTurnoException {
+		throw new TipoEstadoTurnoException("Warning: Operacion indisponible para el estado Confirmado.");
 	}
 
 	@Override
-	public void cancelar() throws EstadoTurnoException {
-		throw new EstadoTurnoException("Warning: Operacion indisponible para el estado Confirmado.");
+	public void cancelar() throws TipoEstadoTurnoException {
+		throw new TipoEstadoTurnoException("Warning: Operacion indisponible para el estado Confirmado.");
 	}
 
 	@Override
-	public void confirmarAsistencia() throws EstadoTurnoException {
-		throw new EstadoTurnoException("Warning: Operacion indisponible para el estado Confirmado.");
+	public void confirmarAsistencia() throws TipoEstadoTurnoException {
+		throw new TipoEstadoTurnoException("Warning: Operacion indisponible para el estado Confirmado.");
 	}
 
 	@Override
-	public void confirmarAusencia() throws EstadoTurnoException {
-		throw new EstadoTurnoException("Warning: Operacion indisponible para el estado Confirmado.");
+	public void confirmarAusencia() throws TipoEstadoTurnoException {
+		throw new TipoEstadoTurnoException("Warning: Operacion indisponible para el estado Confirmado.");
 	}
 	
-	public TipoEstado getTipoEstado(){
-		return TipoEstado.CONFIRMADA;
+	@Override
+	public TipoEstadoTurno getTipoEstado(){
+		return TipoEstadoTurno.CONFIRMADA;
 	}
 	
 }

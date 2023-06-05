@@ -1,13 +1,13 @@
 package com.poa.tp.entities.estado_turno;
 
-import com.poa.tp.entities.enums.TipoEstado;
-import com.poa.tp.entities.exceptions.EstadoTurnoException;
+import com.poa.tp.entities.enums.TipoEstadoTurno;
+import com.poa.tp.entities.exceptions.TipoEstadoTurnoException;
 
 public interface EstadoTurno {
 
-	public void reservar() throws EstadoTurnoException;
-	public void cancelar() throws EstadoTurnoException;
-	public void confirmarAsistencia() throws EstadoTurnoException;
-	public void confirmarAusencia() throws EstadoTurnoException;
-	public TipoEstado getTipoEstado();
+	public void reservar() throws TipoEstadoTurnoException;
+	public void cancelar() throws TipoEstadoTurnoException;
+	public void confirmarAsistencia() throws TipoEstadoTurnoException;
+	public void confirmarAusencia() throws TipoEstadoTurnoException;
+	public TipoEstadoTurno getTipoEstado();
 }

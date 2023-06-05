@@ -1,9 +1,11 @@
 package com.poa.tp.entities.enums;
 
-import com.poa.tp.entities.exceptions.EstadoTurnoException;
+import com.poa.tp.entities.exceptions.TipoEstadoTurnoException;
 
-public enum TipoEstado {
+public enum TipoEstadoTurno {
 
+	// Nota: Hacemos esto para controlar los valores numericos internos 
+	//     de TipoPatologia. De esta forma no depende de valores autogeneradoes. 
 	LIBRE		(1, "Turno Libre"),
 	RESERVADO	(2, "Turno reservado"),
 	CONFIRMADA	(3, "Turno confirmado. El paciente asistio a la consulta."),
@@ -12,7 +14,7 @@ public enum TipoEstado {
 	private int codigo; 
 	private String descripcion;
 	
-	private TipoEstado(int codigo, String descripcion) {
+	private TipoEstadoTurno(int codigo, String descripcion) {
 		this.codigo = codigo;
 		this.descripcion = descripcion;
 	}
@@ -25,19 +27,19 @@ public enum TipoEstado {
 		return descripcion;
 	}
 	
-	public static TipoEstado toEnum(Integer cod) throws EstadoTurnoException {
+	public static TipoEstadoTurno toEnum(Integer cod) throws TipoEstadoTurnoException {
 		
 		if (cod == null)
 			return null;
 		
-		for ( TipoEstado x : TipoEstado.values() ) {
+		for ( TipoEstadoTurno x : TipoEstadoTurno.values() ) {
 			
 			if (cod.equals(x.getCodigo())) {
 				return x;
 			}
 		}
 		
-		throw new EstadoTurnoException("Id estado invalido");
+		throw new TipoEstadoTurnoException("Id estado invalido");
 	
 	}
 	

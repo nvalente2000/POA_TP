@@ -1,5 +1,7 @@
 package com.poa.tp.entities.enums;
 
+import com.poa.tp.entities.exceptions.TipoPagologiaException;
+
 public enum TipoPatologia {
 
 	// Nota: Hacemos esto para controlar los valores numericos internos
@@ -30,7 +32,7 @@ public enum TipoPatologia {
 		return descripcion;
 	}
 	
-	public static TipoPatologia toEnum(Integer cod) {
+	public static TipoPatologia toEnum(Integer cod) throws TipoPagologiaException {
 		
 		if (cod == null)
 			return null;
@@ -40,9 +42,8 @@ public enum TipoPatologia {
 			if (cod.equals(x.getCodigo())) {
 				return x;
 			}
-		}
-		
-		throw new IllegalArgumentException("Id invalido");
+		}	
+		throw new TipoPagologiaException("Id invalido");
 			
 	}
 	

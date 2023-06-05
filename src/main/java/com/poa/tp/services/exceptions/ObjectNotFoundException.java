@@ -1,6 +1,6 @@
 package com.poa.tp.services.exceptions;
 
-public class ObjectNotFoundException extends ServoceException{
+public class ObjectNotFoundException extends ServiceException{
 
 	private static final long serialVersionUID = 1L;
 
@@ -18,8 +18,5 @@ public class ObjectNotFoundException extends ServoceException{
 
 	public ObjectNotFoundException(Throwable cause) {
 		super(cause);
-	}
-
-	
-	
+	}	
 }
