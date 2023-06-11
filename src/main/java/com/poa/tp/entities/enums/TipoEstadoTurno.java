@@ -4,8 +4,6 @@ import com.poa.tp.entities.exceptions.TipoEstadoTurnoException;
 
 public enum TipoEstadoTurno {
 
-	// Nota: Hacemos esto para controlar los valores numericos internos 
-	//     de TipoPatologia. De esta forma no depende de valores autogeneradoes. 
 	LIBRE		(1, "Turno Libre"),
 	RESERVADO	(2, "Turno reservado"),
 	CONFIRMADA	(3, "Turno confirmado. El paciente asistio a la consulta."),

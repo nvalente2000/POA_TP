@@ -2,7 +2,7 @@ package com.poa.tp.controllers.exceptions;
 
 import java.io.Serializable;
 
-public class StandardError implements Serializable {
+public class StandardErrorResponse implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -10,7 +10,7 @@ public class StandardError implements Serializable {
 	private String msg; 	// Mensaje error
 	private Long timeStamp;	// Tiempo
 	
-	public StandardError(Integer status, String msg, Long timeStamp) {
+	public StandardErrorResponse(Integer status, String msg, Long timeStamp) {
 		super();
 		this.status = status;
 		this.msg = msg;

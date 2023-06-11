@@ -1,40 +1,22 @@
-package com.poa.tp.entities;
+package com.poa.tp.dto;
 
-import java.io.Serializable;
+import java.util.List;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+public class UsuarioDTO {
 
-
-@Entity
-@Table (name = "usuarios", 
-		uniqueConstraints = { 
-			@UniqueConstraint(columnNames = {"dni"}),
-			@UniqueConstraint(columnNames = {"email"})
-		})
-public class Usuario implements Serializable {
-	
-	private static final long serialVersionUID = 1L;
-
-	@Id 
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 	private String dni;
 	private String email;
 	private String nombre; 
 	private String apellido;
 	private String password;
-	private String roles; 
-		
-	public Usuario() {
+	private List<String> roles;
+	
+	public UsuarioDTO() {
 		super();
 	}
 
-	public Usuario(Long id, String dni, String email, String nombre, String apellido, String password, String roles) {
+	public UsuarioDTO(Long id, String dni, String email, String nombre, String apellido, String password, List<String> roles) {
 		super();
 		this.id = id;
 		this.dni = dni;
@@ -84,7 +66,7 @@ public class Usuario implements Serializable {
 	public void setApellido(String apellido) {
 		this.apellido = apellido;
 	}
-	
+
 	public String getPassword() {
 		return password;
 	}
@@ -93,18 +75,19 @@ public class Usuario implements Serializable {
 		this.password = password;
 	}
 
-	public String getRoles() {
+	public List<String> getRoles() {
 		return roles;
 	}
 
-	public void setRoles(String roles) {
+	public void setRoles(List<String> roles) {
 		this.roles = roles;
 	}
 
 	@Override
 	public String toString() {
-		return "Usuario [id=" + id + ", dni=" + dni + ", email=" + email + ", nombre=" + nombre + ", apellido="
+		return "UsuarioDTO [id=" + id + ", dni=" + dni + ", email=" + email + ", nombre=" + nombre + ", apellido="
 				+ apellido + ", password=" + password + ", roles=" + roles + "]";
 	}
-	
 }
+
+
