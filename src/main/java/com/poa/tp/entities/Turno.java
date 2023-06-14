@@ -25,7 +25,7 @@ import jakarta.persistence.Table;
 
 
 @Entity
-@Table (name = "tb_turno")
+@Table (name = "tb_turnos")
 public class Turno implements Serializable {
 
 	private static final long serialVersionUID = 1L;

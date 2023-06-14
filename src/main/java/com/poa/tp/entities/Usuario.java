@@ -2,6 +2,10 @@ package com.poa.tp.entities;
 
 import java.io.Serializable;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import com.poa.tp.dto.UsuarioDTO;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -11,7 +15,7 @@ import jakarta.persistence.UniqueConstraint;
 
 
 @Entity
-@Table (name = "usuarios", 
+@Table (name = "tb_usuarios", 
 		uniqueConstraints = { 
 			@UniqueConstraint(columnNames = {"dni"}),
 			@UniqueConstraint(columnNames = {"email"})
@@ -28,15 +32,14 @@ public class Usuario implements Serializable {
 	private String nombre; 
 	private String apellido;
 	private String password;
-	private String roles; 
-		
+	private String roles;
+			
 	public Usuario() {
 		super();
 	}
 
-	public Usuario(Long id, String dni, String email, String nombre, String apellido, String password, String roles) {
+	public Usuario(String dni, String email, String nombre, String apellido, String password, String roles) {
 		super();
-		this.id = id;
 		this.dni = dni;
 		this.email = email;
 		this.nombre = nombre;
@@ -44,7 +47,17 @@ public class Usuario implements Serializable {
 		this.password = password;
 		this.roles = roles;
 	}
-
+	
+	public Usuario(UsuarioDTO usuarioDto, PasswordEncoder passwordEncoder) {
+		super();
+		this.dni = usuarioDto.getDni();
+		this.email = usuarioDto.getEmail();
+		this.nombre = usuarioDto.getNombre();
+		this.apellido = usuarioDto.getApellido();
+		this.password = passwordEncoder.encode(usuarioDto.getPassword()) ;
+		this.roles = String.join(",", usuarioDto.getRoles());
+	}
+	
 	public Long getId() {
 		return id;
 	}

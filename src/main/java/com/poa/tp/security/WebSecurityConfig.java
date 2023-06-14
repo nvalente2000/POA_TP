@@ -24,16 +24,13 @@ public class WebSecurityConfig {
        
     		http							
     			.authorizeHttpRequests( auth -> {			 
-        			auth.requestMatchers(PathRequest.toH2Console()).permitAll();
-        			
-    				auth.requestMatchers("/usuarios/all").permitAll();
-    				auth.requestMatchers("/usuarios/id/{id}").hasAnyAuthority("ADMIN");
-    				auth.requestMatchers("/usuarios/dni/{dni}").hasAnyAuthority("ADMIN"); 
-    				auth.requestMatchers("/usuarios/email/{email}").hasAnyAuthority("ADMIN");
+        			auth.requestMatchers(PathRequest.toH2Console()).permitAll();    
+    				auth.requestMatchers("/usuarios/").permitAll();
+    				auth.requestMatchers("/usuarios/find/{dni}").hasAnyAuthority("ADMIN"); 
     				auth.requestMatchers("/usuarios/save").hasAnyAuthority("ADMIN");
     				auth.requestMatchers("/usuarios/saveAll").hasAuthority("ADMIN");
-    				
-    				//auth.requestMatchers("/usuarios/dni/{dni}").hasAnyAuthority("PACIENTE", "TERAPISTA");
+    				auth.requestMatchers("/usuarios/delete/{dni}").hasAnyAuthority("ADMIN");
+    				auth.requestMatchers("/usuarios/update").hasAnyAuthority("ADMIN");
     				auth.anyRequest().authenticated();    			
     			})
     			.csrf((csrf) -> csrf.disable())
@@ -42,26 +39,5 @@ public class WebSecurityConfig {
 		
     		return http.build();
 	}    	
-
-/*  DEPRECATED
-	@Bean
-	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		
-		http.authorizeHttpRequests()
-				.requestMatchers(PathRequest.toH2Console()).permitAll()
-				.requestMatchers("/usuarios/all").permitAll()
-				.requestMatchers("/usuarios/id/{id}").permitAll()
-				.requestMatchers("/usuarios/dni/{dni}").permitAll()
-				.requestMatchers("/usuarios/email/{email}").permitAll()
-				//.requestMatchers("/usuarios/save").hasAuthority("ADMIN")
-				.requestMatchers("/usuarios/saveAll").permitAll()
-				.anyRequest().authenticated()
-				.and()
-				.csrf().disable()
-				.httpBasic();
-		return http.build();
-	}	
-*/
-
 }
 

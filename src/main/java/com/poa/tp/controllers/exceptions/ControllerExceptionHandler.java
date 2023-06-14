@@ -5,6 +5,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import com.poa.tp.security.exceptions.SecurityUserNotFoundException;
+import com.poa.tp.services.exceptions.InvalidEntityDataException;
 import com.poa.tp.services.exceptions.LoginUnauthorizedException;
 import com.poa.tp.services.exceptions.ObjectAlreadyExistException;
 import com.poa.tp.services.exceptions.ObjectNotFoundException;
@@ -22,6 +24,24 @@ public class ControllerExceptionHandler {
 		
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(err);
 	}
+
+	@ExceptionHandler (ObjectAlreadyExistException.class)
+	public ResponseEntity<StandardErrorResponse> objectAlreadyExist(ObjectAlreadyExistException e, HttpServletRequest request){
+		
+		StandardErrorResponse err = new StandardErrorResponse(HttpStatus.CONFLICT.value(), e.getMessage(), System.currentTimeMillis());
+		
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
+		
+	}
+
+	@ExceptionHandler (InvalidEntityDataException.class)
+	public ResponseEntity<StandardErrorResponse> serviceErrorEntityDataInvalid(ServiceException e, HttpServletRequest request){
+		
+		StandardErrorResponse err = new StandardErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY.value(), e.getMessage(), System.currentTimeMillis());
+		
+		return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(err);
+		
+	}
 	
 	@ExceptionHandler (LoginUnauthorizedException.class)
 	public ResponseEntity<StandardErrorResponse> loginUnauthorized(LoginUnauthorizedException e, HttpServletRequest request){
@@ -32,17 +52,17 @@ public class ControllerExceptionHandler {
 	}
 
 
-	@ExceptionHandler (ObjectAlreadyExistException.class)
-	public ResponseEntity<StandardErrorResponse> objectAlreadyExist(ObjectAlreadyExistException e, HttpServletRequest request){
+	@ExceptionHandler (SecurityUserNotFoundException.class)
+	public ResponseEntity<StandardErrorResponse> serviceErrorUserLoginNotFound(ServiceException e, HttpServletRequest request){
 		
-		StandardErrorResponse err = new StandardErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage(), System.currentTimeMillis());
+		StandardErrorResponse err = new StandardErrorResponse(HttpStatus.NOT_FOUND.value(), e.getMessage(), System.currentTimeMillis());
 		
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(err);
 		
 	}
 	
 	@ExceptionHandler (ServiceException.class)
-	public ResponseEntity<StandardErrorResponse> serviceError(ServiceException e, HttpServletRequest request){
+	public ResponseEntity<StandardErrorResponse> serviceErrorService(ServiceException e, HttpServletRequest request){
 		
 		StandardErrorResponse err = new StandardErrorResponse(HttpStatus.CONFLICT.value(), e.getMessage(), System.currentTimeMillis());
 		
@@ -50,6 +70,15 @@ public class ControllerExceptionHandler {
 		
 	}
 	
+	@ExceptionHandler (Exception.class)
+	public ResponseEntity<StandardErrorResponse> serviceError(ServiceException e, HttpServletRequest request){
+		
+		StandardErrorResponse err = new StandardErrorResponse(HttpStatus.CONFLICT.value(), e.getMessage(), System.currentTimeMillis());
+		
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(err);
+		
+	}
+
 
 	
 }

@@ -11,21 +11,21 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.poa.tp.dto.PacienteDTO;
-import com.poa.tp.services.PacienteService;
+import com.poa.tp.dto.TerapistaDTO;
+import com.poa.tp.services.TerapistaService;
 
 @RestController
-@RequestMapping(value="/pacientes")
-public class PacienteController {
+@RequestMapping(value="/terapistas")
+public class TerapistaController {
 
 	@Autowired 
-	private PacienteService pacienteService;
+	private TerapistaService terapistaService;
 	
 
 	@GetMapping(value="/all")
 	public ResponseEntity<?> listar() {
 		
-		List<PacienteDTO> lista = pacienteService.getAll();
+		List<TerapistaDTO> lista = terapistaService.getAll();
 		
 		return ResponseEntity.ok().body(lista); 
 	}
@@ -33,29 +33,25 @@ public class PacienteController {
 	@GetMapping(value="/dni/{dni}")
 	public ResponseEntity<?> buscarPorDni(@PathVariable String dni) {
 
-		PacienteDTO obj = pacienteService.getOne(dni);
+		TerapistaDTO obj = terapistaService.getOne(dni);
 		
 		return ResponseEntity.ok().body(obj);
 	}
 	
 	@PostMapping(value="/save")
-	public ResponseEntity<?> save(@RequestBody PacienteDTO entidad) {
+	public ResponseEntity<?> save(@RequestBody TerapistaDTO entidad) {
 
-		pacienteService.save(entidad);
+		terapistaService.save(entidad);
 		
 		return ResponseEntity.ok().body(entidad);		
 	}
 
 	@PostMapping(value="/saveAll")
-	public ResponseEntity<?> saveAll(@RequestBody List<PacienteDTO> lista) {
+	public ResponseEntity<?> saveAll(@RequestBody List<TerapistaDTO> lista) {
 
-		pacienteService.saveAll(lista);
+		terapistaService.saveAll(lista);
 		
 		return ResponseEntity.ok().body(lista);		
 	}
-	
-	
-	
-	
 	
 }

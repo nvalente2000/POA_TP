@@ -5,41 +5,55 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.poa.tp.dto.PacienteDTO;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 
 @Entity
-@Table (name = "paciente")
+@Table (name = "tb_pacientes")
 public class Paciente implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 
 	@Id 
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 	private Boolean identidadVerificada;
-	
 	
 	@JsonBackReference
 	@OneToMany(mappedBy = "paciente")
 	private List<Turno> turnos = new ArrayList<Turno>();
-		
+	
+	@JsonManagedReference
+	@OneToOne
+	@JoinColumn(name = "usuario_id")
+	@MapsId
+	private Usuario usuarioPaciente;
+	
 	public Paciente() {
 		super();
 	}
 	
-	public Paciente(Long id,boolean identidadVerificada) {
+	public Paciente(Boolean identidadVerificada, Usuario usuarioPaciente) {
 		super();
-		this.id = id;
 		this.identidadVerificada = identidadVerificada;
+		this.usuarioPaciente = usuarioPaciente;
 	}
 
+	public Paciente(PacienteDTO pacienteDto) {
+		super();
+		this.identidadVerificada = pacienteDto.getIdentidadVerificada();
+		this.usuarioPaciente = pacienteDto.getUsuarioPaciente();
+	}
+
+	
 	public Boolean getIdentidadVerificada() {
 		return identidadVerificada;
 	}
@@ -62,6 +76,18 @@ public class Paciente implements Serializable {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public Usuario getUsuarioPaciente() {
+		return usuarioPaciente;
+	}
+	
+	public void setUsuarioPaciente(Usuario usuarioPaciente) {
+		this.usuarioPaciente = usuarioPaciente;
+	}
+
+	public String getDni() {
+		return this.usuarioPaciente.getDni();
 	}
 	
 }

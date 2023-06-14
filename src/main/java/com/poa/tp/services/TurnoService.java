@@ -25,7 +25,7 @@ public class TurnoService {
 		
 	}
 	
-	public Turno buscar( Integer id) {
+	public Turno buscar( Long id) {
 		
 		Optional<Turno> obj = turnoRepository.findById(id);  //Resolve el null. Optional es un conteiner y encapsula el null.
 	

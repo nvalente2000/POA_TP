@@ -1,10 +1,12 @@
 package com.poa.tp.dto;
 
+import java.util.Arrays;
 import java.util.List;
+
+import com.poa.tp.entities.Usuario;
 
 public class UsuarioDTO {
 
-	private Long id;
 	private String dni;
 	private String email;
 	private String nombre; 
@@ -16,9 +18,8 @@ public class UsuarioDTO {
 		super();
 	}
 
-	public UsuarioDTO(Long id, String dni, String email, String nombre, String apellido, String password, List<String> roles) {
+	public UsuarioDTO( String dni, String email, String nombre, String apellido, String password, List<String> roles) {
 		super();
-		this.id = id;
 		this.dni = dni;
 		this.email = email;
 		this.nombre = nombre;
@@ -26,13 +27,15 @@ public class UsuarioDTO {
 		this.password = password;
 		this.roles = roles;
 	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
+	
+	public UsuarioDTO( Usuario usuario) {
+		super();
+		this.dni = usuario.getDni();
+		this.email = usuario.getDni();
+		this.nombre = usuario.getNombre();
+		this.apellido = usuario.getApellido();
+		this.password = usuario.getPassword();
+		this.roles = Arrays.asList(usuario.getRoles().split(","));
 	}
 
 	public String getDni() {
@@ -85,9 +88,10 @@ public class UsuarioDTO {
 
 	@Override
 	public String toString() {
-		return "UsuarioDTO [id=" + id + ", dni=" + dni + ", email=" + email + ", nombre=" + nombre + ", apellido="
-				+ apellido + ", password=" + password + ", roles=" + roles + "]";
+		return "UsuarioDTO [dni=" + dni + ", email=" + email + ", nombre=" + nombre + ", apellido=" + apellido
+				+ ", password=" + password + ", roles=" + roles + "]";
 	}
+	
 }
 
 

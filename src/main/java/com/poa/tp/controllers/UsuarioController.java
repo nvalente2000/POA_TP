@@ -4,9 +4,11 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,48 +23,28 @@ public class UsuarioController {
 	@Autowired 
 	private UsuarioService usuarioService;
 
-	public UsuarioController() {
-	}
-
-	@GetMapping(value="/all")
-	public List<UsuarioDTO> listarTodos() {
+	@GetMapping(value="/")
+	public ResponseEntity<?> findAll() {
 		
 		List<UsuarioDTO> lista = usuarioService.getAll();
 		
-		return lista; 
+		return ResponseEntity.ok().body(lista); 
 	}
 	
-	@GetMapping(value="/id/{id}")
-	public ResponseEntity<?> buscarPorId(@PathVariable Long id) {
+	@GetMapping(value="/find/{dni}")
+	public ResponseEntity<?> find(@PathVariable String dni) {
 
-		UsuarioDTO obj = usuarioService.getOne(id);
+		UsuarioDTO obj = usuarioService.getOne(dni);
 		
 		return ResponseEntity.ok().body(obj);
 	}
-	
-	@GetMapping(value="/dni/{dni}")
-	public ResponseEntity<?> buscarPorDni(@PathVariable String dni) {
-
-		UsuarioDTO obj = usuarioService.getOneByDni(dni);
-		
-		return ResponseEntity.ok().body(obj);
-	}
-	
-	@GetMapping(value="/email/{email}")
-	public ResponseEntity<?> buscarPorEmail(@PathVariable String email) {
-
-		UsuarioDTO obj = usuarioService.getOneByEmail(email);
-		
-		return ResponseEntity.ok().body(obj);
-	}
-
 	
 	@PostMapping(value="/save")
-	public ResponseEntity<?> save(@RequestBody UsuarioDTO user) {
+	public ResponseEntity<?> save(@RequestBody UsuarioDTO entidad) {
 
-		usuarioService.save(user);
+		usuarioService.save(entidad);
 		
-		return ResponseEntity.ok().body(user);		
+		return ResponseEntity.ok().body(entidad);		
 	}
 
 	@PostMapping(value="/saveAll")
@@ -72,5 +54,22 @@ public class UsuarioController {
 		
 		return ResponseEntity.ok().body(lista);		
 	}
+	
+	@DeleteMapping(value="/delete/{dni}")
+	public ResponseEntity<?> delete(@PathVariable String dni) {
+
+		usuarioService.delete(dni);
+		
+		return ResponseEntity.ok().body(dni);
+	}
+	
+	@PutMapping(value="/update")
+	public ResponseEntity<?> delete(@PathVariable UsuarioDTO entidad) {
+
+		usuarioService.update(entidad);
+		
+		return ResponseEntity.ok().body(entidad);
+	}
+	
 	
 }

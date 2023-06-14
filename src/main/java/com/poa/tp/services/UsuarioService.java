@@ -1,6 +1,5 @@
 package com.poa.tp.services;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -14,10 +13,9 @@ import com.poa.tp.entities.Usuario;
 import com.poa.tp.repositories.UsuarioRepository;
 import com.poa.tp.services.exceptions.ObjectAlreadyExistException;
 import com.poa.tp.services.exceptions.ObjectNotFoundException;
-import com.poa.tp.services.exceptions.ServiceException;
 
 @Service
-public class UsuarioService implements IService <UsuarioDTO, Long>{
+public class UsuarioService implements IService <UsuarioDTO, String>{ // Id es el DNI (independiente del almacenamietno interno)
 	
 	@Autowired
 	private UsuarioRepository usuarioRepository;  
@@ -31,150 +29,62 @@ public class UsuarioService implements IService <UsuarioDTO, Long>{
 	
 		List<UsuarioDTO> lista = usuarioRepository.findAll()
 				.stream()
-				.map(user->new UsuarioDTO(
-						user.getId(), 
-						user.getDni(), 
-						user.getEmail(), 
-						user.getNombre(), 
-						user.getApellido(), 
-						user.getPassword(), 
-						Arrays.asList(user.getRoles().split(","))))
+				.map(entidad->new UsuarioDTO(entidad))
 				.collect(Collectors.toList());
 		return lista;
 	}
 	
 	@Override
-	public UsuarioDTO getOne(Long id) throws ServiceException {
-		
-		Optional<UsuarioDTO> obj = usuarioRepository.findById(id)
-				.map(user->new UsuarioDTO(
-					user.getId(), 
-					user.getDni(), 
-					user.getEmail(), 
-					user.getNombre(), 
-					user.getApellido(), 
-					user.getPassword(), 
-					Arrays.asList(user.getRoles().split(","))
-				));
-	
-		return obj.orElseThrow( () -> new ObjectNotFoundException("Objeto no encontrado! Id: " + id + ", Tipo: "+ Usuario.class.getName())); 
-	}
-
-	public UsuarioDTO getOneByDni(String dni) throws ServiceException {
+	public UsuarioDTO getOne(String dni) throws ObjectNotFoundException {
 		
 		Optional<UsuarioDTO> obj = usuarioRepository.findByDni(dni)
-				.map(user->new UsuarioDTO(
-					user.getId(), 
-					user.getDni(), 
-					user.getEmail(), 
-					user.getNombre(), 
-					user.getApellido(), 
-					user.getPassword(), 
-					Arrays.asList(user.getRoles().split(","))
-				));  
+				.map(entidad->new UsuarioDTO(entidad));  
 	
-		return obj.orElseThrow( () -> new ObjectNotFoundException("Objeto no encontrado! DNI: " + dni + ", Tipo: "+ Usuario.class.getName())); 
-	}
-
-	public UsuarioDTO getOneByEmail(String email) throws ServiceException {
-		
-		Optional<UsuarioDTO> obj = usuarioRepository.findByEmail(email)
-				.map(user->new UsuarioDTO(
-					user.getId(), 
-					user.getDni(), 
-					user.getEmail(), 
-					user.getNombre(), 
-					user.getApellido(), 
-					user.getPassword(), 
-					Arrays.asList(user.getRoles().split(","))
-				));
+		return obj.orElseThrow( () -> new ObjectNotFoundException("Objeto no encontrado! DNI: " + dni )); 
 	
-		return obj.orElseThrow( () -> new ObjectNotFoundException("Objeto no encontrado! DNI: " + email + ", Tipo: "+ Usuario.class.getName())); 
 	}
 	
 	@Override
-	public void save(UsuarioDTO entityDTO)  {
+	public void save(UsuarioDTO entityDTO) throws ObjectAlreadyExistException  {
 		
-		Optional<Usuario> usuario = usuarioRepository.findByDni( entityDTO.getDni() );
+		Optional<Usuario> entidad = usuarioRepository.findByDni( entityDTO.getDni() );
 		
-		if (usuario.isPresent()){
-			 throw new ObjectAlreadyExistException("Objeto ya existe! DNI: " + entityDTO.getDni() + ", Tipo: "+ Usuario.class.getName());
+		if (entidad.isPresent()){
+			 throw new ObjectAlreadyExistException("Objeto ya existe! DNI: " + entityDTO.getDni() );
 		}
-		
-		Usuario user = new Usuario (
-							entityDTO.getId(),
-							entityDTO.getDni(), 
-							entityDTO.getEmail(),
-							entityDTO.getNombre(),
-							entityDTO.getApellido(),
-							this.passwordEncoder.encode(entityDTO.getPassword()), 
-							String.join(",", entityDTO.getRoles())
-							);
-
-		usuarioRepository.save(user);
+					
+		usuarioRepository.save(new Usuario (entityDTO, passwordEncoder ));
 	}
 	
-	
-	public void saveAll(List<UsuarioDTO> lista) {
+	@Override
+	public void saveAll(List<UsuarioDTO> lista) throws ObjectAlreadyExistException {
 		
-		for (UsuarioDTO elemento : lista) {
+		for (UsuarioDTO elemento : lista) 
 			this.save( elemento);		
-		}		
+			
 	}
 	
 
 	@Override
-	public void delete(Long id) {	
+	public void delete(String dni) throws ObjectNotFoundException {	
 		
-		Optional<Usuario> usuario = usuarioRepository.findById( id );
+		Optional<Usuario> entidad = usuarioRepository.findByDni( dni );
 		
-		if (usuario.isPresent()){
-			 throw new ObjectNotFoundException("Objeto a eliminar no existe! ID: " + id + ", Tipo: "+ Usuario.class.getName());
-		}
+		if (entidad.isEmpty())
+			 throw new ObjectNotFoundException("Objeto a eliminar no existe! DNI: " + dni );
 		
-		usuarioRepository.deleteById(id);
-		
-	}
-	public void deleteByDni(String dni) {	
-
-		Optional<Usuario> usuario = usuarioRepository.findByDni( dni );
-		
-		if (usuario.isPresent()){
-			 throw new ObjectNotFoundException("Objeto a eliminar no existe! DNI: " + dni + ", Tipo: "+ Usuario.class.getName());
-		}
 		usuarioRepository.deleteByDni(dni);
-	}
-	
-	public void deleteByEmail(String email) {	
-
-		Optional<Usuario> usuario = usuarioRepository.findByEmail( email );
 		
-		if (usuario.isPresent()){
-			 throw new ObjectNotFoundException("Objeto a eliminar no existe! EMAIL: " + email + ", Tipo: "+ Usuario.class.getName());
-		}
-		usuarioRepository.deleteByEmail(email);
-
 	}
-	
+		
 	@Override
 	public void update(UsuarioDTO entityDto) {
-		Optional<Usuario> usuario = usuarioRepository.findById( entityDto.getId() );
+		Optional<Usuario> usuario = usuarioRepository.findByDni( entityDto.getDni() );
 		
-		if (usuario.isPresent()){
-			 throw new ObjectNotFoundException("Objeto a Actualizar no existe! ID: " + entityDto.getId()  + ", Tipo: "+ Usuario.class.getName());
-		}
+		if (usuario.isEmpty())
+			 throw new ObjectNotFoundException("Objeto a Actualizar no existe! DNI: " + entityDto.getDni() );
 		
-		Usuario user = new Usuario (
-				entityDto.getId(),
-				entityDto.getDni(), 
-				entityDto.getEmail(),
-				entityDto.getNombre(),
-				entityDto.getApellido(),
-				this.passwordEncoder.encode(entityDto.getPassword()), 
-				String.join(",", entityDto.getRoles())
-				);
-
-		usuarioRepository.save(user);
+		usuarioRepository.save(new Usuario (entityDto,passwordEncoder ));
 
 	}
 	

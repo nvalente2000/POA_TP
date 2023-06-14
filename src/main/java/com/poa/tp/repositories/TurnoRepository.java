@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.poa.tp.entities.Turno;
 
 
-public interface TurnoRepository extends JpaRepository<Turno, Integer> {
+public interface TurnoRepository extends JpaRepository<Turno, Long> {
 }

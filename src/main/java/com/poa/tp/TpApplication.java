@@ -35,7 +35,7 @@ public class TpApplication implements CommandLineRunner{
 	public void run(String... args) throws Exception {
 
 		// Usuario ADMIN INICIAL
-		UsuarioDTO u = new UsuarioDTO(null, "sysadmin", "sysadmin@sysadmin.com", "sysadmin", "sysadmin", "sysadmin" , Arrays.asList("ADMIN","TERAPISTA"));
+		UsuarioDTO u = new UsuarioDTO("sysadmin", "sysadmin@sysadmin.com", "sysadmin", "sysadmin", "sysadmin" , Arrays.asList("ADMIN","TERAPISTA"));
 		usuarioService.save(u);
 
 			
