@@ -4,10 +4,11 @@ import com.poa.tp.entities.exceptions.PeriodoAtencionException;
 
 public enum PeriodoAtencion {
 
-	TURNO_09_A_12 	(1, "Turno Manana"),
-	TURNO_14_A_18	(2, "Turno Tarde"),
-	TURNO_18_A_22	(3, "Turno nochhe.");
-
+	TURNO_09_A_12 		(1, "Turno Manana"),
+	TURNO_14_A_18		(2, "Turno Tarde"),
+	TURNO_18_A_22		(3, "Turno nochhe."),
+	TURNO_NO_ASIGNADO	(4, "Turno no asignado.");
+	
 	private int codigo; 
 	private String descripcion;
 	

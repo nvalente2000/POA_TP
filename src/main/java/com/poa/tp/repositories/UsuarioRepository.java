@@ -11,8 +11,6 @@ import com.poa.tp.entities.Usuario;
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
 	Optional <Usuario> findByDni (String dni);
-	Optional <Usuario> findByEmail (String email);
-	Usuario deleteByDni (String dni);
-	Usuario deleteByEmail (String email);	
+	void deleteByDni (String dni);
 	
 }

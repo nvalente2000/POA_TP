@@ -9,10 +9,10 @@ public interface IService <T, K> {
 
 	List<T> getAll( );
 	T getOne(K dni) throws ObjectNotFoundException ;
-	void save( T entityDto) throws ObjectAlreadyExistException;
+	void save( T entity) throws ObjectAlreadyExistException;
 	void saveAll(List<T> lista) throws ObjectAlreadyExistException;
-	void delete( K dni) throws ObjectNotFoundException;
-	void update(T entityDto) throws ObjectNotFoundException;
+	void delete( K key) throws ObjectNotFoundException;
+	void update(T entity) throws ObjectNotFoundException;
 	
 }
 

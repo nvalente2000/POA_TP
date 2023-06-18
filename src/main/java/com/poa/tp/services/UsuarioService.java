@@ -8,14 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.poa.tp.dto.UsuarioDTO;
 import com.poa.tp.entities.Usuario;
 import com.poa.tp.repositories.UsuarioRepository;
 import com.poa.tp.services.exceptions.ObjectAlreadyExistException;
 import com.poa.tp.services.exceptions.ObjectNotFoundException;
 
 @Service
-public class UsuarioService implements IService <UsuarioDTO, String>{ // Id es el DNI (independiente del almacenamietno interno)
+public class UsuarioService implements IService <Usuario, String>{ // Id es el DNI (independiente del almacenamietno interno)
 	
 	@Autowired
 	private UsuarioRepository usuarioRepository;  
@@ -25,45 +24,43 @@ public class UsuarioService implements IService <UsuarioDTO, String>{ // Id es e
 	
 
 	@Override
-	public List<UsuarioDTO> getAll() {
+	public List<Usuario> getAll() {
 	
-		List<UsuarioDTO> lista = usuarioRepository.findAll()
+		List<Usuario> lista = usuarioRepository.findAll()
 				.stream()
-				.map(entidad->new UsuarioDTO(entidad))
+				.map(entidad->new Usuario(entidad))
 				.collect(Collectors.toList());
 		return lista;
 	}
 	
 	@Override
-	public UsuarioDTO getOne(String dni) throws ObjectNotFoundException {
+	public Usuario getOne(String dni) throws ObjectNotFoundException {
 		
-		Optional<UsuarioDTO> obj = usuarioRepository.findByDni(dni)
-				.map(entidad->new UsuarioDTO(entidad));  
+		Optional<Usuario> obj = usuarioRepository.findByDni(dni)
+				.map(entidad->new Usuario(entidad));  
 	
 		return obj.orElseThrow( () -> new ObjectNotFoundException("Objeto no encontrado! DNI: " + dni )); 
 	
 	}
 	
 	@Override
-	public void save(UsuarioDTO entityDTO) throws ObjectAlreadyExistException  {
+	public void save(Usuario entity) throws ObjectAlreadyExistException  {
 		
-		Optional<Usuario> entidad = usuarioRepository.findByDni( entityDTO.getDni() );
+		Optional<Usuario> entidad = usuarioRepository.findByDni( entity.getDni() );
 		
 		if (entidad.isPresent()){
-			 throw new ObjectAlreadyExistException("Objeto ya existe! DNI: " + entityDTO.getDni() );
+			 throw new ObjectAlreadyExistException("Objeto ya existe! DNI: " + entity.getDni() );
 		}
-					
-		usuarioRepository.save(new Usuario (entityDTO, passwordEncoder ));
+		entity.setPassword(passwordEncoder.encode(entity.getPassword()));
+		usuarioRepository.save(entity);
 	}
 	
 	@Override
-	public void saveAll(List<UsuarioDTO> lista) throws ObjectAlreadyExistException {
+	public void saveAll(List<Usuario> lista) throws ObjectAlreadyExistException {
 		
-		for (UsuarioDTO elemento : lista) 
-			this.save( elemento);		
-			
+		for (Usuario elemento : lista) 
+			this.save( elemento);				
 	}
-	
 
 	@Override
 	public void delete(String dni) throws ObjectNotFoundException {	
@@ -73,18 +70,24 @@ public class UsuarioService implements IService <UsuarioDTO, String>{ // Id es e
 		if (entidad.isEmpty())
 			 throw new ObjectNotFoundException("Objeto a eliminar no existe! DNI: " + dni );
 		
-		usuarioRepository.deleteByDni(dni);
-		
+		usuarioRepository.deleteById(entidad.get().getId());
 	}
 		
 	@Override
-	public void update(UsuarioDTO entityDto) {
-		Optional<Usuario> usuario = usuarioRepository.findByDni( entityDto.getDni() );
+	public void update(Usuario entity) {
+		Optional<Usuario> usuario = usuarioRepository.findByDni( entity.getDni() );
 		
 		if (usuario.isEmpty())
-			 throw new ObjectNotFoundException("Objeto a Actualizar no existe! DNI: " + entityDto.getDni() );
-		
-		usuarioRepository.save(new Usuario (entityDto,passwordEncoder ));
+			 throw new ObjectNotFoundException("Objeto a Actualizar no existe! DNI: " + entity.getDni() );
+	
+		Usuario user = new Usuario (usuario.get());
+		user.setApellido(entity.getApellido());
+		user.setEmail(entity.getEmail());
+		user.setNombre(entity.getNombre());
+		user.setRoles(entity.getRoles());
+		user.setPassword(passwordEncoder.encode(entity.getPassword()));
+		entity.setId(usuario.get().getId());
+		usuarioRepository.save(user);
 
 	}
 	

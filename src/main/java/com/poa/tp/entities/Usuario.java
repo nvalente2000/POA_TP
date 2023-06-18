@@ -1,15 +1,15 @@
 package com.poa.tp.entities;
 
 import java.io.Serializable;
+import java.util.List;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
-
-import com.poa.tp.dto.UsuarioDTO;
-
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
@@ -34,12 +34,27 @@ public class Usuario implements Serializable {
 	private String password;
 	private String roles;
 			
+	@OneToOne (cascade=CascadeType.ALL, mappedBy="usuarioPaciente", fetch = FetchType.EAGER) 
+	private Paciente paciente; 	
+	
+	@OneToOne (cascade=CascadeType.ALL, mappedBy="usuarioTerapia", fetch = FetchType.EAGER) 
+	private Terapista terapista; 	
+
+	
 	public Usuario() {
 		super();
 	}
-
-	public Usuario(String dni, String email, String nombre, String apellido, String password, String roles) {
+	
+	public Usuario(Long id, 
+			String dni, 
+			String email, 
+			String nombre, 
+			String apellido, 
+			String password, 
+			String roles) {
+		
 		super();
+		this.id = id;
 		this.dni = dni;
 		this.email = email;
 		this.nombre = nombre;
@@ -48,16 +63,51 @@ public class Usuario implements Serializable {
 		this.roles = roles;
 	}
 	
-	public Usuario(UsuarioDTO usuarioDto, PasswordEncoder passwordEncoder) {
+	public Usuario(Long id, 
+			String dni, 
+			String email, 
+			String nombre, 
+			String apellido, 
+			String password, 
+			List<String> roles) {
+		
 		super();
-		this.dni = usuarioDto.getDni();
-		this.email = usuarioDto.getEmail();
-		this.nombre = usuarioDto.getNombre();
-		this.apellido = usuarioDto.getApellido();
-		this.password = passwordEncoder.encode(usuarioDto.getPassword()) ;
-		this.roles = String.join(",", usuarioDto.getRoles());
+		this.id = id;
+		this.dni = dni;
+		this.email = email;
+		this.nombre = nombre;
+		this.apellido = apellido;
+		this.password = password;
+		this.roles = String.join(",", roles);;
 	}
-	
+
+	public Usuario(Usuario usuario) {
+		super();
+		this.id=usuario.getId();
+		this.dni = usuario.getDni();
+		this.email = usuario.getEmail();
+		this.nombre = usuario.getNombre();
+		this.apellido = usuario.getApellido();
+		this.password = usuario.getPassword();
+		this.roles = usuario.getRoles();
+		this.paciente = usuario.getPaciente();
+		this.terapista = usuario.getTerapista();
+	}
+/*
+	public Usuario(UsuarioResponseDTO usuarioRequestDto) {
+		super();
+		this.dni = usuarioRequestDto.getDni();
+		this.email = usuarioRequestDto.getEmail();
+		this.nombre = usuarioRequestDto.getNombre();
+		this.apellido = usuarioRequestDto.getApellido();
+		this.roles = String.join(",", usuarioRequestDto.getRoles());
+	}	
+
+	public Usuario(UsuarioRequestDTO usuarioRequestDto) {
+		super();
+		this.dni = usuarioRequestDto.getDni();
+	}	
+	*/
 	public Long getId() {
 		return id;
 	}
@@ -114,10 +164,20 @@ public class Usuario implements Serializable {
 		this.roles = roles;
 	}
 
-	@Override
-	public String toString() {
-		return "Usuario [id=" + id + ", dni=" + dni + ", email=" + email + ", nombre=" + nombre + ", apellido="
-				+ apellido + ", password=" + password + ", roles=" + roles + "]";
+	public Paciente getPaciente() {
+		return paciente;
 	}
+
+	public void setPaciente(Paciente paciente) {
+		this.paciente = paciente;
+	}
+
+	public Terapista getTerapista() {
+		return terapista;
+	}
+
+	public void setTerapista(Terapista terapista) {
+		this.terapista = terapista;
+	}	
 	
 }

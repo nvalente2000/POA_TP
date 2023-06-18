@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.poa.tp.dto.PacienteDTO;
 import com.poa.tp.entities.Paciente;
 import com.poa.tp.entities.Usuario;
 import com.poa.tp.repositories.PacienteRepository;
@@ -17,7 +16,7 @@ import com.poa.tp.services.exceptions.ObjectNotFoundException;
 
 
 @Service
-public class PacienteService implements IService <PacienteDTO, String>{ // Id es el DNI (entiudad debil, obtengo del usuario)
+public class PacienteService implements IService <Paciente, String>{ // Id es el DNI (entiudad debil, obtengo del usuario)
 	
 	@Autowired
 	private PacienteRepository pacienteRepository;  
@@ -26,49 +25,54 @@ public class PacienteService implements IService <PacienteDTO, String>{ // Id es
 	private UsuarioRepository usuarioRepository;  
 
 	@Override
-	public List<PacienteDTO> getAll() {
+	public List<Paciente> getAll() {
 	
-		List<PacienteDTO> lista = pacienteRepository.findAll()
+		List<Paciente> lista = pacienteRepository.findAll()
 				.stream()
-				.map(entidad->new PacienteDTO(entidad))
+				.map(entidad->new Paciente(entidad))
 				.collect(Collectors.toList());
 		return lista;
 	}
 	
 	
 	@Override
-	public PacienteDTO getOne(String dni) throws ObjectNotFoundException {
+	public Paciente getOne(String dni) throws ObjectNotFoundException {
 		
 		Optional<Usuario> usuario = usuarioRepository.findByDni( dni);		
 		if (usuario.isEmpty() )
-			throw new ObjectNotFoundException("Cliente del paciente no encontrado! DNI: " + dni);
+			throw new ObjectNotFoundException("Usuario y paciente no encontrado! DNI: " + dni);
 		
-		Optional<PacienteDTO> obj = pacienteRepository.findById( usuario.get().getId() )
-				.map(entidad ->new PacienteDTO (entidad));
+		Optional<Paciente> obj = pacienteRepository.findById( usuario.get().getId() )
+				.map(entidad ->new Paciente (entidad));
 	
 		return obj.orElseThrow( () -> new ObjectNotFoundException("Paciente no encontrado! DNI: " + dni )); 
 	}
 	
 
 	@Override
-	public void save(PacienteDTO entityDTO)  throws ObjectNotFoundException,ObjectAlreadyExistException {
+	public void save(Paciente entity)  throws ObjectNotFoundException,ObjectAlreadyExistException {
 		
-		Optional<Usuario> usuario = usuarioRepository.findByDni( entityDTO.getUsuarioPaciente().getDni());		
+		Optional<Usuario> usuario = usuarioRepository.findByDni( entity.getUsuarioPaciente().getDni());		
 		if (usuario.isEmpty() )
-			throw new ObjectNotFoundException("Cliente del paciente no encontrado! DNI: " + entityDTO.getUsuarioPaciente().getDni() );
+			throw new ObjectNotFoundException("Usuario y paciente no encontrado! DNI: " + entity.getUsuarioPaciente().getDni() );
 		
 		Optional<Paciente> entidad = pacienteRepository.findById( usuario.get().getId() );
 		if (entidad.isPresent()) 
-			throw new ObjectAlreadyExistException("Paciente ya existe relacionado al cliente! DNI: " + usuario.get().getDni()  + ", ID Paciente: "+entidad.get().getId() );
-
-		pacienteRepository.save(new Paciente (entityDTO));
+			throw new ObjectAlreadyExistException("Paciente ya existe relacionado al cliente! DNI: " + entity.getUsuarioPaciente().getDni()  + ", ID Paciente: "+entidad.get().getId() );
+		
+		entity.setUsuarioPaciente(usuario.get());
+		entity.setId(usuario.get().getId());
+		usuario.get().setPaciente(entity);
+		
+		usuarioRepository.save(usuario.get());
+		
 	}
 	 
 	
 	@Override
-	public void saveAll(List<PacienteDTO> lista) throws ObjectNotFoundException,ObjectAlreadyExistException {
+	public void saveAll(List<Paciente> lista) throws ObjectNotFoundException,ObjectAlreadyExistException {
 		
-		for (PacienteDTO elemento : lista) {
+		for (Paciente elemento : lista) {
 			this.save( elemento);		
 		}		
 	}
@@ -79,28 +83,33 @@ public class PacienteService implements IService <PacienteDTO, String>{ // Id es
 		
 		Optional<Usuario> usuario = usuarioRepository.findByDni( dni);		
 		if (usuario.isEmpty() )
-			throw new ObjectNotFoundException("Cliente del paciente a eliminar no encontrado! DNI: " + dni);
+			throw new ObjectNotFoundException("Usuario y paciente a eliminar no encontrado! DNI: " + dni);
 		
 		Optional<Paciente> entidad = pacienteRepository.findById( usuario.get().getId() );
 		if (entidad.isEmpty()) 
-			throw new ObjectAlreadyExistException("Paciente a eliminar no existe! DNI: " + dni + ", ID Paciente: "+entidad.get().getId());
+			throw new ObjectNotFoundException("Paciente a eliminar no existe! DNI: " + dni);
 		
 		usuarioRepository.deleteById(entidad.get().getId());	
 	}
 	
 	
 	@Override
-	public void update(PacienteDTO entityDto) {
+	public void update(Paciente entity) {
 	
-		Optional<Usuario> usuario = usuarioRepository.findByDni( entityDto.getUsuarioPaciente().getDni());		
+		Optional<Usuario> usuario = usuarioRepository.findByDni( entity.getUsuarioPaciente().getDni());		
 		if (usuario.isEmpty() )
-			throw new ObjectNotFoundException("Cliente del paciente a actualizar no encontrado! DNI: " + entityDto.getUsuarioPaciente().getDni());
+			throw new ObjectNotFoundException("Usuario y paciente a actualizar no encontrado! DNI: " + entity.getUsuarioPaciente().getDni());
 
 		Optional<Paciente> entidad = pacienteRepository.findById( usuario.get().getId() );
 		if (entidad.isEmpty()) 
-			throw new ObjectAlreadyExistException("Paciente a actualizar no existe! DNI: " + usuario.get().getId() + ", ID Paciente: "+entidad.get().getId());
+			throw new ObjectAlreadyExistException("Paciente a actualizar no existe! DNI: " + entity.getUsuarioPaciente().getDni() );
 		
-		pacienteRepository.save(new Paciente (entityDto));
+		entity.setId(entidad.get().getId());
+		entity.setUsuarioPaciente(usuario.get());
+		usuario.get().setPaciente(entity);
+			
+		usuarioRepository.save(usuario.get());
+			
 	}
 	
 }

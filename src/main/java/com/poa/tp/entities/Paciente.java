@@ -5,10 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.poa.tp.dto.PacienteDTO;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapsId;
@@ -28,11 +27,10 @@ public class Paciente implements Serializable {
 	private Boolean identidadVerificada;
 	
 	@JsonBackReference
-	@OneToMany(mappedBy = "paciente")
+	@OneToMany(mappedBy = "paciente", fetch = FetchType.EAGER)
 	private List<Turno> turnos = new ArrayList<Turno>();
 	
-	@JsonManagedReference
-	@OneToOne
+	@OneToOne (fetch = FetchType.EAGER)
 	@JoinColumn(name = "usuario_id")
 	@MapsId
 	private Usuario usuarioPaciente;
@@ -41,18 +39,19 @@ public class Paciente implements Serializable {
 		super();
 	}
 	
-	public Paciente(Boolean identidadVerificada, Usuario usuarioPaciente) {
+	public Paciente(Long id, Boolean identidadVerificada, Usuario usuarioPaciente) {
 		super();
+		this.id = id; 
 		this.identidadVerificada = identidadVerificada;
 		this.usuarioPaciente = usuarioPaciente;
 	}
 
-	public Paciente(PacienteDTO pacienteDto) {
+	public Paciente( Paciente paciente) {
 		super();
-		this.identidadVerificada = pacienteDto.getIdentidadVerificada();
-		this.usuarioPaciente = pacienteDto.getUsuarioPaciente();
+		this.id = paciente.getId();
+		this.identidadVerificada = paciente.getIdentidadVerificada();
+		this.usuarioPaciente = paciente.getUsuarioPaciente();
 	}
-
 	
 	public Boolean getIdentidadVerificada() {
 		return identidadVerificada;
@@ -84,10 +83,6 @@ public class Paciente implements Serializable {
 	
 	public void setUsuarioPaciente(Usuario usuarioPaciente) {
 		this.usuarioPaciente = usuarioPaciente;
-	}
-
-	public String getDni() {
-		return this.usuarioPaciente.getDni();
 	}
 	
 }

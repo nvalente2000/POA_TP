@@ -5,11 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.poa.tp.dto.TerapistaDTO;
 import com.poa.tp.entities.enums.PeriodoAtencion;
+import com.poa.tp.entities.exceptions.PeriodoAtencionException;
+import com.poa.tp.services.exceptions.InvalidEntityDataException;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapsId;
@@ -29,11 +30,10 @@ public class Terapista implements Serializable {
 	private Integer periodoAtencion;
 	
 	@JsonBackReference
-	@OneToMany(mappedBy = "terapista")
+	@OneToMany(mappedBy = "terapista", fetch = FetchType.EAGER)
 	private List<Turno> turnos = new ArrayList<Turno>();
 	
-	@JsonManagedReference
-	@OneToOne
+	@OneToOne (fetch = FetchType.EAGER)
 	@JoinColumn(name = "usuario_id")
 	@MapsId
 	private Usuario usuarioTerapia;
@@ -42,18 +42,19 @@ public class Terapista implements Serializable {
 		super();
 	}
 	
-	public Terapista(PeriodoAtencion periodoAtencion, Usuario usuarioTerapia) {
+	public Terapista(Long id, PeriodoAtencion periodoAtencion, Usuario usuarioTerapia) {
 		super();
+		this.id = id; 
 		this.periodoAtencion = periodoAtencion.getCodigo();
 		this.usuarioTerapia = usuarioTerapia;
 	}
 	
-	public Terapista( TerapistaDTO terapistaDto) {
+	public Terapista(Terapista terapista) throws InvalidEntityDataException {
 		super();
-		this.periodoAtencion = terapistaDto.getPeriodoAtencion().getCodigo();
-		this.usuarioTerapia = terapistaDto.getUsuarioTerapia();
+		this.id = terapista.id; 
+		this.periodoAtencion = terapista.getPeriodoAtencion().getCodigo();
+		this.usuarioTerapia = terapista.getUsuarioTerapia();
 	}
-	
 
 	public List<Turno> getTurnos() {
 		return turnos;
@@ -63,12 +64,16 @@ public class Terapista implements Serializable {
 		this.turnos = turnos;
 	}	
 
-	public Integer getPeriodoAtencion() {
-		return periodoAtencion;
+	public PeriodoAtencion getPeriodoAtencion() throws InvalidEntityDataException {
+		try {
+			return PeriodoAtencion.toEnum(periodoAtencion);
+		} catch (PeriodoAtencionException e) {
+			throw new InvalidEntityDataException( "Periodo de atencion invalida", e);
+		}
 	}
 
-	public void setPeriodoAtencion(Integer periodoAtencion) {
-		this.periodoAtencion = periodoAtencion;
+	public void setPeriodoAtencion(PeriodoAtencion periodoAtencion) {
+		this.periodoAtencion = periodoAtencion.getCodigo();
 	}
 
 	public Long getId() {
@@ -87,7 +92,4 @@ public class Terapista implements Serializable {
 		this.usuarioTerapia = usuarioTerapia;
 	}
 
-	public String getDni() {
-		return this.usuarioTerapia.getDni();
-	}
 }
