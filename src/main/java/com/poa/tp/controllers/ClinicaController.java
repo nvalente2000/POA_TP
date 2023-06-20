@@ -1,5 +1,6 @@
 package com.poa.tp.controllers;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,19 +13,28 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.supercsv.io.CsvBeanWriter;
+import org.supercsv.io.ICsvBeanWriter;
+import org.supercsv.prefs.CsvPreference;
 
 import com.poa.tp.dto.TurnoListaLibresRespDTO;
 import com.poa.tp.dto.TurnoReqSaveDTO;
+import com.poa.tp.dto.TurnoRespDTO;
 import com.poa.tp.entities.Turno;
 import com.poa.tp.entities.enums.PeriodoAtencion;
 import com.poa.tp.services.ClinicaService;
 import com.poa.tp.services.PacienteService;
 import com.poa.tp.services.TerapistaService;
+import com.poa.tp.services.TurnoService;
+import com.poa.tp.services.exceptions.GenerateCSVException;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 
 @RestController
 @RequestMapping(value="/clinica")
 public class ClinicaController {
+	
 	
 	@Autowired 
 	private ClinicaService clinicaService;
@@ -34,6 +44,9 @@ public class ClinicaController {
 
 	@Autowired 
 	private PacienteService pacienteService;
+	
+	@Autowired 
+	private TurnoService turnoService;
 	
 		
 	@GetMapping(value="/findAllFreeShifts")
@@ -119,4 +132,39 @@ public class ClinicaController {
 		return ResponseEntity.ok().body(listaResponse); 
 	}
 
+	@GetMapping(value="/getHistoryToCSV")
+	public void getHistoricoTurnosEnCSV(HttpServletResponse response) {
+		
+		// Data
+		List<Turno> lista = turnoService.getAll();
+		
+		List<TurnoRespDTO> listaResponse = lista
+				.stream()
+				.map(entidad->new TurnoRespDTO(entidad))
+				.collect(Collectors.toList());
+		
+		// Formato arquivo
+		response.setContentType("text/csv");
+		String csvFileName = "historyTurnos.csv";
+		String headerKey = "Content-Disposition";
+	    String headerValue = String.format("attachment; filename=\"%s\"",  csvFileName);
+	    response.setHeader(headerKey, headerValue);
+
+	    // Creo el archivo
+		String[] csvheader = {"FechaHoraTurno", "Duracion", "TipoPatologia", "Estado", "DniPaciente", "DniTerapista" };
+		String[] bameMapping = {"fechaHoraTurno", "duracion", "tipoPatologia", "estado", "dniPaciente", "dniTerapista" };
+
+		ICsvBeanWriter csvWriter; 
+		try {
+			csvWriter =  new CsvBeanWriter(response.getWriter(), CsvPreference.STANDARD_PREFERENCE);
+			csvWriter.writeHeader(csvheader);
+			for (TurnoRespDTO turnoDTO : listaResponse) {
+				csvWriter.write(turnoDTO, bameMapping);
+		     }
+			csvWriter.close();
+			
+		} catch (IOException e) {
+			throw new GenerateCSVException("No fue posible generar el historico en CSV");
+		}
+	}
 }

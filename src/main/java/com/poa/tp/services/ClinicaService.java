@@ -1,20 +1,29 @@
 package com.poa.tp.services;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.supercsv.io.CsvBeanWriter;
+import org.supercsv.io.ICsvBeanWriter;
+import org.supercsv.prefs.CsvPreference;
 
+import com.poa.tp.dto.TurnoRespDTO;
 import com.poa.tp.entities.Paciente;
 import com.poa.tp.entities.Terapista;
 import com.poa.tp.entities.Turno;
 import com.poa.tp.entities.enums.PeriodoAtencion;
 import com.poa.tp.entities.enums.TipoEstadoTurno;
 import com.poa.tp.entities.exceptions.TipoEstadoTurnoException;
+import com.poa.tp.services.exceptions.GenerateCSVException;
 import com.poa.tp.services.exceptions.TurnoServiceException;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 
 @Service
@@ -163,6 +172,35 @@ public class ClinicaService  {
 				listaTurnosTerpista.add(turno);
 		}
 		return listaTurnosTerpista; 	
+	}
+	
+	public ICsvBeanWriter getHistoricoTurnosEnCSV(HttpServletResponse response)  {
+			    
+		// Data
+		List<Turno> lista = turnoService.getAll();
+		List<TurnoRespDTO> listaResponse = lista
+				.stream()
+				.map(entidad->new TurnoRespDTO(entidad))
+				.collect(Collectors.toList());
+		
+		// Genero csv	
+		ICsvBeanWriter csvWriter;
+		String[] header = {"FechaHoraTurno", "Duracion", "TipoPatologia", "Estado", "DniPaciente", "DniTerapista" };
+		String[] propiedades = {"fechaHoraTurno", "duracion", "tipoPatologia", "estado", "dniPaciente", "dniTerapista" };
+
+		try {
+			csvWriter = new CsvBeanWriter(response.getWriter(), CsvPreference.STANDARD_PREFERENCE);
+			csvWriter.writeHeader(header);
+			for (TurnoRespDTO turnoDTO : listaResponse) {
+				csvWriter.write(turnoDTO, propiedades);
+		     }
+
+		} catch (IOException e) {
+			throw new GenerateCSVException("No fue posible generar el historico en CSV");
+		}
+		
+		return  csvWriter;
+		 
 	}
 	
 	

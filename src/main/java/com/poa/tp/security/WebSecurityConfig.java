@@ -63,6 +63,8 @@ public class WebSecurityConfig {
     				auth.requestMatchers("/clinica/confirmarTurno/{date}").hasAnyAuthority("ADMIN", "TERAPISTA");
     				auth.requestMatchers("/clinica/findAllShiftsByTerapist/{dniTerapista}").hasAnyAuthority("ADMIN", "TERAPISTA");
     			  			
+    				auth.requestMatchers("/clinica/getHistoryToCSV").hasAnyAuthority("ADMIN");
+    				
     				auth.anyRequest().authenticated();    			
     			})
     			.csrf((csrf) -> csrf.disable())   			

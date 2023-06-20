@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.poa.tp.security.exceptions.SecurityUserNotFoundException;
 import com.poa.tp.services.exceptions.FromatoFechaReqInvalidoException;
+import com.poa.tp.services.exceptions.GenerateCSVException;
 import com.poa.tp.services.exceptions.InvalidEntityDataException;
 import com.poa.tp.services.exceptions.LoginUnauthorizedException;
 import com.poa.tp.services.exceptions.ObjectAlreadyExistException;
@@ -80,6 +81,15 @@ public class ControllerExceptionHandler {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
 		
 	}
+	
+	@ExceptionHandler (GenerateCSVException.class)
+	public ResponseEntity<StandardErrorResponse> generarSCVErrorService(ServiceException e, HttpServletRequest request){
+		
+		StandardErrorResponse err = new StandardErrorResponse(HttpStatus.CONFLICT.value(), e.getMessage(), System.currentTimeMillis());
+		
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(err);
+		
+	}	
 
 	@ExceptionHandler (ServiceException.class)
 	public ResponseEntity<StandardErrorResponse> serviceErrorService(ServiceException e, HttpServletRequest request){
