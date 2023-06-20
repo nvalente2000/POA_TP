@@ -17,10 +17,14 @@ import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 
 @Entity
-@Table (name = "tb_terapistas")
+@Table (name = "tb_terapistas",
+		uniqueConstraints = { 
+			@UniqueConstraint(columnNames = {"periodoAtencion"})
+		})
 public class Terapista implements Serializable {
 			
 	private static final long serialVersionUID = 1L;

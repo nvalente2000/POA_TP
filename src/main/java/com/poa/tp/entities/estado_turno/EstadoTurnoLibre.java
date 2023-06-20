@@ -2,6 +2,7 @@ package com.poa.tp.entities.estado_turno;
 
 import java.io.Serializable;
 
+import com.poa.tp.entities.Turno;
 import com.poa.tp.entities.enums.TipoEstadoTurno;
 import com.poa.tp.entities.exceptions.TipoEstadoTurnoException;
 
@@ -21,23 +22,18 @@ public class EstadoTurnoLibre implements EstadoTurno, Serializable {
 	}
 	
 	@Override
-	public void reservar() throws TipoEstadoTurnoException {
-		throw new TipoEstadoTurnoException("Warning: Operacion indisponible para el estado Libre.");
+	public void reservar(Turno turno) throws TipoEstadoTurnoException {
+		turno.setTipoEstado(EstadoTurnoPendienteConfirReservado.getInstance().getTipoEstado()); 
 	}
 
 	@Override
-	public void cancelar() throws TipoEstadoTurnoException {
-		throw new TipoEstadoTurnoException("Warning: Operacion indisponible para el estado Libre.");
+	public void cancelar(Turno turno) throws TipoEstadoTurnoException {
+		throw new TipoEstadoTurnoException("No se puede cancelar un Turno que estado libre.");
 	}
 
 	@Override
-	public void confirmarAsistencia() throws TipoEstadoTurnoException {
-		throw new TipoEstadoTurnoException("Warning: Operacion indisponible para el estado Libre.");
-	}
-
-	@Override
-	public void confirmarAusencia() throws TipoEstadoTurnoException {
-		throw new TipoEstadoTurnoException("Warning: Operacion indisponible para el estado Libre.");
+	public void confirmar(Turno turno) throws TipoEstadoTurnoException {
+		throw new TipoEstadoTurnoException("No se puede confirmar un Turno que estado libre.");
 	}
 
 	@Override

@@ -10,7 +10,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
@@ -56,11 +55,17 @@ public class WebSecurityConfig {
     				auth.requestMatchers("/turnos/delete/{date}").hasAnyAuthority("ADMIN", "PACIENTE");
     				auth.requestMatchers("/turnos/update").hasAnyAuthority("ADMIN", "PACIENTE");
 
-    				
+    				auth.requestMatchers("/clinica/findAllFreeShifts").hasAnyAuthority("ADMIN", "PACIENTE");
+    				auth.requestMatchers("/clinica/findAllFreeShiftsByTerapist/{dniTerapista}").hasAnyAuthority("ADMIN", "PACIENTE");
+    				auth.requestMatchers("/clinica/findAllFreeShiftsByPeriodo/{periodo}").hasAnyAuthority("ADMIN", "PACIENTE");
+    				auth.requestMatchers("/clinica/reservar").hasAnyAuthority("ADMIN", "PACIENTE");
+    				auth.requestMatchers("/clinica/cancelar/{date}").hasAnyAuthority("ADMIN", "PACIENTE");
+    				auth.requestMatchers("/clinica/confirmarTurno/{date}").hasAnyAuthority("ADMIN", "TERAPISTA");
+    				auth.requestMatchers("/clinica/findAllShiftsByTerapist/{dniTerapista}").hasAnyAuthority("ADMIN", "TERAPISTA");
+    			  			
     				auth.anyRequest().authenticated();    			
     			})
     			.csrf((csrf) -> csrf.disable())   			
-    			//.csrf(csrf -> csrf.ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**")))
 		        .headers((headers) -> headers.frameOptions((frame) -> frame.sameOrigin()))
 		        .httpBasic(Customizer.withDefaults());
 		

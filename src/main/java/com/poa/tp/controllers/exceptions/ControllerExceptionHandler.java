@@ -12,6 +12,7 @@ import com.poa.tp.services.exceptions.LoginUnauthorizedException;
 import com.poa.tp.services.exceptions.ObjectAlreadyExistException;
 import com.poa.tp.services.exceptions.ObjectNotFoundException;
 import com.poa.tp.services.exceptions.ServiceException;
+import com.poa.tp.services.exceptions.TurnoServiceException;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -64,6 +65,15 @@ public class ControllerExceptionHandler {
 	
 	@ExceptionHandler (FromatoFechaReqInvalidoException.class)
 	public ResponseEntity<StandardErrorResponse> serviceFormatoFechaInvalido(ServiceException e, HttpServletRequest request){
+		
+		StandardErrorResponse err = new StandardErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage(), System.currentTimeMillis());
+		
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
+		
+	}
+
+	@ExceptionHandler (TurnoServiceException.class)
+	public ResponseEntity<StandardErrorResponse> serviceTurnoErrorService(ServiceException e, HttpServletRequest request){
 		
 		StandardErrorResponse err = new StandardErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage(), System.currentTimeMillis());
 		

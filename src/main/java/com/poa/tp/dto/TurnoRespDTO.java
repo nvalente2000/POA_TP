@@ -12,18 +12,18 @@ public class TurnoRespDTO {
 	private Integer duracion;
 	private TipoPatologia tipoPatologia;  
 	private TipoEstadoTurno estado;	
-	private PacienteRespDTO paciente; 
-	private TerapistaRespDTO terapista; 		
+	private String dniPaciente; 
+	private String dniTerapista; 		
 	
 	
 	public TurnoRespDTO( Turno turno) {
 		super();
-		this.fechaHoraTurno = TurnoDateFormat.toStromgFormat(turno.getFechaHoraTurno());
+		this.fechaHoraTurno = TurnoDateFormat.toStrimgDateTimeFormat(turno.getFechaHoraTurno());
 		this.duracion = turno.getDuracion();
 		this.tipoPatologia = turno.getTipoPatologia();
 		this.estado = turno.getEstado().getTipoEstado();
-		this.paciente = new PacienteRespDTO(turno.getPaciente());
-		this.terapista = new TerapistaRespDTO(turno.getTerapista());
+		this.dniPaciente = turno.getPaciente().getUsuarioPaciente().getDni();
+		this.dniTerapista = turno.getTerapista().getUsuarioTerapia().getDni();
 	}
 
 	public String getFechaHoraTurno() {
@@ -58,20 +58,20 @@ public class TurnoRespDTO {
 		this.estado = estado;
 	}
 
-	public PacienteRespDTO getPaciente() {
-		return paciente;
+	public String getDniPaciente() {
+		return dniPaciente;
 	}
 
-	public void setPaciente(PacienteRespDTO paciente) {
-		this.paciente = paciente;
+	public void setDniPaciente(String dniPaciente) {
+		this.dniPaciente = dniPaciente;
 	}
 
-	public TerapistaRespDTO getTerapista() {
-		return terapista;
+	public String getDniTerapista() {
+		return dniTerapista;
 	}
 
-	public void setTerapista(TerapistaRespDTO terapista) {
-		this.terapista = terapista;
+	public void setDniTerapista(String dniTerapista) {
+		this.dniTerapista = dniTerapista;
 	}
 	
 }

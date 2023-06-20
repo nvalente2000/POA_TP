@@ -1,6 +1,8 @@
 package com.poa.tp.services;
 
-import java.util.Date;
+
+import java.time.LocalDateTime;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -23,8 +25,7 @@ import jakarta.transaction.Transactional;
 
 @Service
 public class TurnoService implements IService <Turno, String> { 
-
-	
+		
 	@Autowired
 	private TurnoRepository turnoRepository;  
 	
@@ -51,7 +52,7 @@ public class TurnoService implements IService <Turno, String> {
 	@Override
 	public Turno getOne(String fechaHoraTurno) throws ObjectNotFoundException {
 
-		Optional<Turno> turno = turnoRepository.findByFechaHoraTurno(TurnoDateFormat.toDateForma(fechaHoraTurno));		
+		Optional<Turno> turno = turnoRepository.findByFechaHoraTurno(TurnoDateFormat.toDateTimeFormat(fechaHoraTurno));		
 	
 		return turno.orElseThrow( () -> new ObjectNotFoundException("Turno no encontrado! Fecha Hora: " + fechaHoraTurno)); 
 	}
@@ -78,11 +79,6 @@ public class TurnoService implements IService <Turno, String> {
 		Optional<Terapista> terapista = terapistaRepository.findById( usuarioTerapista.get().getId() );
 		if (terapista.isEmpty()) 
 			throw new ObjectAlreadyExistException("Terapista no existe ! DNI: " +  usuarioTerapista.get().getDni() );
-
-		turno.setPaciente(paciente.get());
-		turno.setTerapista(terapista.get());
-		paciente.get().getTurnos().add(turno);
-		terapista.get().getTurnos().add(turno);
 		
 		turnoRepository.save(turno);
 	}
@@ -99,11 +95,11 @@ public class TurnoService implements IService <Turno, String> {
 	@Transactional
 	public void delete(String fechaHoraTurno) throws ObjectNotFoundException {	
 		
-		Optional<Turno> entidad = turnoRepository.findByFechaHoraTurno(TurnoDateFormat.toDateForma(fechaHoraTurno));
+		Optional<Turno> entidad = turnoRepository.findByFechaHoraTurno(TurnoDateFormat.toDateTimeFormat(fechaHoraTurno));
 		if (entidad.isEmpty()) 
 			throw new ObjectNotFoundException("Turno no encontrado! Fecha Hora: " + fechaHoraTurno );
 			
-		Date date = TurnoDateFormat.toDateForma(fechaHoraTurno) ;
+		LocalDateTime date = TurnoDateFormat.toDateTimeFormat(fechaHoraTurno) ;
 		turnoRepository.deleteByFechaHoraTurno(date );
 		
 	}
@@ -114,7 +110,7 @@ public class TurnoService implements IService <Turno, String> {
 		
 		Optional<Turno> turnoOld = turnoRepository.findByFechaHoraTurno( turno.getFechaHoraTurno() );
 		if (turnoOld.isEmpty()) 
-			throw new ObjectAlreadyExistException("Turno no existe! Fecha Hora: " +  turno.getFechaHoraTurno() );
+			throw new ObjectNotFoundException("Turno no existe! Fecha Hora: " +  turno.getFechaHoraTurno() );
 		
 		Optional<Usuario> usuarioPaciente = usuarioRepository.findByDni( turno.getPaciente().getUsuarioPaciente().getDni());		
 		if (usuarioPaciente.isEmpty() )
@@ -133,14 +129,46 @@ public class TurnoService implements IService <Turno, String> {
 			throw new ObjectAlreadyExistException("Terapista no existe ! DNI: " +  usuarioTerapista.get().getDni() );
 
 		turno.setId(turnoOld.get().getId());
-		turno.setPaciente(paciente.get());
-		turno.setTerapista(terapista.get());
-		paciente.get().getTurnos().add(turno);
-		terapista.get().getTurnos().add(turno);
 		
 		turnoRepository.save(turno);
 
 	}
 
+
 	
+	
+	/*
+	// Ejemplos de Data hora
+	DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd-MM-yyyy HH::mm");
+	DateTimeFormatter fmt2 = DateTimeFormatter.ofPattern("dd-MM-yyyy");  // mismo sin horas
+	DateTimeFormatter fmt3 = DateTimeFormatter.ISO_DATE_TIME; 
+
+	LocalDate d01 = LocalDate.now();
+	LocalDateTime d02 = LocalDateTime.now();
+	LocalDate d03 = LocalDate.parse("2022-07-20");
+	LocalDateTime d04 = LocalDateTime.parse("2022-07-20T01:30:26");
+	LocalDateTime d05 = LocalDateTime.parse("2022-07-20T01:30:26");
+	LocalDateTime d06 = LocalDateTime.parse("2022-07-20 01:30:26", fmt);
+	LocalDateTime d10 = LocalDateTime.of(2022, 7, 20, 2, 30); /// yyyy dd MM  HH mm
+
+	String dataEnString1 = d06.format(fmt);  /// Formata en lo que define de fomrato.
+	String dataEnString2 = fmt.format(d06); // Es equivalente al anterior. 
+	String dataEnString3 = d06.toString();   // Lo deja en el formatoo ISO 
+
+	int dia = d06.getDayOfMonth();
+	int mes = d06.getMonthValue();
+	int ano = d06.getYear();
+	int hora = d06.getHour();
+	int min = d06.getMinute();
+
+	/// Data hora son objetos inmutables. Tenemos que crear otro objeto. 
+	LocalDateTime pastWeekDate = d04.minusDays(7); // Menos 7 ddias
+	LocalDateTime nexttWeekDate = d04.plusDays(7); // Menos 7 ddias
+	LocalDateTime pastHoursWeekDate = d04.minusMinutes(30); // Menos 7 ddias
+	LocalDateTime nextHourstWeekDate = d04.plusMinutes(30); // Menos 7 ddias
+			
+	Duration t1 = Duration.between(pastHoursWeekDate, nextHourstWeekDate); 
+	Long duracion = t1.toHours();
+
+	*/
 }

@@ -93,4 +93,6 @@ public class TerapistaController {
 		
 		return ResponseEntity.ok().body(entidadReqDto);
 	}
+
+	
 }

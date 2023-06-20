@@ -6,39 +6,39 @@ import com.poa.tp.entities.Turno;
 import com.poa.tp.entities.enums.TipoEstadoTurno;
 import com.poa.tp.entities.exceptions.TipoEstadoTurnoException;
 
-public class EstadoTurnoConfirmado implements EstadoTurno, Serializable {
+public class EstadoTurnoPendienteConfirReservado implements EstadoTurno, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private static EstadoTurnoConfirmado instance = null; 
+	private static EstadoTurnoPendienteConfirReservado instance = null; 
 	
-	private EstadoTurnoConfirmado() {}
+	private EstadoTurnoPendienteConfirReservado() {}
 	
-	public static EstadoTurnoConfirmado getInstance() {
+	public static EstadoTurnoPendienteConfirReservado getInstance() {
 		if (instance == null) {
-			instance = new EstadoTurnoConfirmado();
+			instance = new EstadoTurnoPendienteConfirReservado();
 		}
 		return instance;
 	}
 	
 	@Override
 	public void reservar(Turno turno) throws TipoEstadoTurnoException {
-		throw new TipoEstadoTurnoException("No se puede reservar un Turno que estado Confirmado."); 
+		throw new TipoEstadoTurnoException("No se puede reservar un Turno ya reservado.");
 	}
 
 	@Override
 	public void cancelar(Turno turno) throws TipoEstadoTurnoException {
-		throw new TipoEstadoTurnoException("No se puede cancelar un Turno que estado Confirmado.");
+		turno.setTipoEstado(EstadoTurnoLibre.getInstance().getTipoEstado()); 		
 	}
 
 	@Override
 	public void confirmar(Turno turno) throws TipoEstadoTurnoException {
-		throw new TipoEstadoTurnoException("No se puede confirmar un Turno que estado Confirmado.");
+		turno.setTipoEstado(EstadoTurnoConfirmado.getInstance().getTipoEstado()); 
 	}
-	
+
 	@Override
 	public TipoEstadoTurno getTipoEstado(){
-		return TipoEstadoTurno.CONFIRMADA;
+		return TipoEstadoTurno.PENDIENTE_CONFIRMACION;
 	}
 	
 }

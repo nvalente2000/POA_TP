@@ -1,5 +1,7 @@
 package com.poa.tp.services;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -8,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.poa.tp.entities.Terapista;
+import com.poa.tp.entities.Turno;
 import com.poa.tp.entities.Usuario;
+import com.poa.tp.entities.enums.PeriodoAtencion;
 import com.poa.tp.repositories.TerapistaRepository;
 import com.poa.tp.repositories.UsuarioRepository;
 import com.poa.tp.services.exceptions.ObjectAlreadyExistException;
@@ -109,5 +113,45 @@ public class TerapistaService implements IService <Terapista, String> { // Id es
 
 	}
 	
+	public Terapista getTerapistaPorHodario( LocalDateTime horario ){
+		
+		List<Terapista> listaTerapistas = this.getAll();
+		
+		for ( Terapista terapista : listaTerapistas ) {
+			
+			int hhDesdeTerapista = terapista.getPeriodoAtencion().getHhDesde();
+			int mmDesdeTerapista = terapista.getPeriodoAtencion().getMmDesde();
+			int hhHastaTerapista = terapista.getPeriodoAtencion().getHhHasta();
+			int mmHastaTerapista = terapista.getPeriodoAtencion().getMmHasta();
+			
+			LocalDateTime horarioValidar = LocalDateTime.of(horario.getYear(), horario.getMonth(), horario.getDayOfMonth(), horario.getHour(), horario.getMinute());
+			LocalDateTime horarioInicioTurnoTerapista = LocalDateTime.of(horario.getYear(), horario.getMonth(), horario.getDayOfMonth(), hhDesdeTerapista, mmDesdeTerapista);
+			LocalDateTime horarioFinTurnoTerapista = LocalDateTime.of(horario.getYear(), horario.getMonth(), horario.getDayOfMonth(), hhHastaTerapista, mmHastaTerapista);			
+
+			Long diffConPrimerHorarioAtencion = Duration.between(horarioInicioTurnoTerapista, horarioValidar).getSeconds() /60;
+			Long diffConUltimoHorarioAtencion = Duration.between(horarioValidar, horarioFinTurnoTerapista).getSeconds() /60;
+		
+			if (  	diffConPrimerHorarioAtencion >= 0 && 
+					diffConUltimoHorarioAtencion >= Turno.DURACION_MIN_TURNO ) 
+				return terapista; 
+		
+		}	
+		return null; 	
+		
+	}
+
+	public Terapista getTerapistaPorPeriodo( PeriodoAtencion periodoAtencion ){
+		
+		List<Terapista> listaTerapistas = this.getAll();
+		
+		for ( Terapista terapista : listaTerapistas ) {
+			
+			if (terapista.getPeriodoAtencion().equals(periodoAtencion))
+					return terapista;
+			
+		}	
+		return null; 	
+	}
+
 
 }

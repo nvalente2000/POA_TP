@@ -7,12 +7,12 @@ import com.poa.tp.entities.enums.PeriodoAtencion;
 public class TerapistaRespDTO {
 
 	private PeriodoAtencion periodoAtencion;
-	private UsuarioRelacionadoDTO usuarioTerapia;
+	private UsuarioRespDTO usuarioTerapia;
 
 	public TerapistaRespDTO(Terapista terapista) {
 		super();
 		this.periodoAtencion = terapista.getPeriodoAtencion();
-		this.usuarioTerapia = new UsuarioRelacionadoDTO(terapista.getUsuarioTerapia());
+		this.usuarioTerapia = new UsuarioRespDTO(terapista.getUsuarioTerapia());
 	}
 
 	public PeriodoAtencion getPeriodoAtencion() {
@@ -25,12 +25,12 @@ public class TerapistaRespDTO {
 	}
 
 
-	public UsuarioRelacionadoDTO getUsuarioTerapia() {
+	public UsuarioRespDTO getUsuarioTerapia() {
 		return usuarioTerapia;
 	}
 
 
-	public void setUsuarioTerapia(UsuarioRelacionadoDTO usuarioTerapia) {
+	public void setUsuarioTerapia(UsuarioRespDTO usuarioTerapia) {
 		this.usuarioTerapia = usuarioTerapia;
 	}
 	

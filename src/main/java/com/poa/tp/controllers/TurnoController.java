@@ -14,9 +14,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.poa.tp.dto.TurnoReqDTO;
+import com.poa.tp.dto.TurnoReqSaveDTO;
+import com.poa.tp.dto.TurnoReqUpdateDTO;
 import com.poa.tp.dto.TurnoRespDTO;
 import com.poa.tp.entities.Turno;
+import com.poa.tp.services.PacienteService;
+import com.poa.tp.services.TerapistaService;
 import com.poa.tp.services.TurnoService;
 
 
@@ -27,6 +30,13 @@ public class TurnoController {
 	@Autowired 
 	private TurnoService turnoService;
 
+	@Autowired 
+	private TerapistaService terapistaService;
+	
+	@Autowired 
+	private PacienteService pacienteService;
+	
+	
 	@GetMapping(value="/")
 	public ResponseEntity<?> findAll() {
 		
@@ -51,9 +61,9 @@ public class TurnoController {
 	}
 	
 	@PostMapping(value="/save")
-	public ResponseEntity<?> save(@RequestBody TurnoReqDTO entidadReqDto) {
+	public ResponseEntity<?> save(@RequestBody TurnoReqSaveDTO entidadReqDto) {
 
-		Turno entidad = entidadReqDto.toTurno();
+		Turno entidad = entidadReqDto.toTurno(terapistaService, pacienteService);
 		
 		turnoService.save(entidad);
 		
@@ -61,11 +71,11 @@ public class TurnoController {
 	}
 
 	@PostMapping(value="/saveAll")
-	public ResponseEntity<?> saveAll(@RequestBody List<TurnoReqDTO> listaRequest) {
+	public ResponseEntity<?> saveAll(@RequestBody List<TurnoReqSaveDTO> listaRequest) {
 		
 		List<Turno> lista = listaRequest
 						.stream()
-						.map (entidad -> entidad.toTurno())
+						.map (entidad -> entidad.toTurno(terapistaService, pacienteService))
 						.collect(Collectors.toList());
 				
 		turnoService.saveAll(lista);
@@ -84,9 +94,9 @@ public class TurnoController {
 	
 	
 	@PutMapping(value="/update")
-	public ResponseEntity<?> update(@RequestBody TurnoReqDTO entidadReqDto) {
+	public ResponseEntity<?> update(@RequestBody TurnoReqUpdateDTO entidadReqDto) {
 
-		Turno entidad = entidadReqDto.toTurno();
+		Turno entidad = entidadReqDto.toTurno(turnoService);
 		
 		turnoService.update(entidad);
 		

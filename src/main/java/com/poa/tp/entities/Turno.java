@@ -1,7 +1,7 @@
 package com.poa.tp.entities;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Value;
 
@@ -9,10 +9,9 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.poa.tp.entities.enums.TipoEstadoTurno;
 import com.poa.tp.entities.enums.TipoPatologia;
 import com.poa.tp.entities.estado_turno.EstadoTurno;
-import com.poa.tp.entities.estado_turno.EstadoTurnoAusente;
 import com.poa.tp.entities.estado_turno.EstadoTurnoConfirmado;
 import com.poa.tp.entities.estado_turno.EstadoTurnoLibre;
-import com.poa.tp.entities.estado_turno.EstadoTurnoReservado;
+import com.poa.tp.entities.estado_turno.EstadoTurnoPendienteConfirReservado;
 import com.poa.tp.entities.exceptions.TipoEstadoTurnoException;
 import com.poa.tp.entities.exceptions.TipoPagologiaException;
 import com.poa.tp.services.exceptions.InvalidEntityDataException;
@@ -35,14 +34,14 @@ import jakarta.persistence.UniqueConstraint;
 		})
 public class Turno implements Serializable {
 
-	private final static int DURACION_MIN_TURNO=30;
+	public final static int DURACION_MIN_TURNO=30;
 	
 	private static final long serialVersionUID = 1L;
 
 	@Id 
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
-	private Date fechaHoraTurno; 
+	private LocalDateTime fechaHoraTurno; 
 	@Value ("${com.turnos.duracion}")
 	private Integer duracion;
 	private Integer tipoPatologia; // Guardo Int, pero expongo TipoPatologia. Uso conversion interna (por seguridad de no usar directamente valores del enum autogenerados) 
@@ -63,19 +62,19 @@ public class Turno implements Serializable {
 		super();
 		this.duracion = DURACION_MIN_TURNO;
 		this.codigoEstado = TipoEstadoTurno.LIBRE.getCodigo(); //Inica libre 
+		this.tipoPatologia = TipoPatologia.OTRO.getCodigo();
 	}
 
 	public Turno(
 			Long id, 
-			Date fechaHoraTurno, 
-			Integer duracion, 
+			LocalDateTime fechaHoraTurno, 
 			TipoPatologia tipoPatologia, 
 			Paciente paciente, 
 			Terapista terapista) {
 		super();
 		this.id = id;
 		this.fechaHoraTurno = fechaHoraTurno;
-		this.duracion = duracion;
+		this.duracion = DURACION_MIN_TURNO;
 		this.tipoPatologia = tipoPatologia.getCodigo();
 		this.codigoEstado = TipoEstadoTurno.LIBRE.getCodigo(); //Inica libre 
 		this.paciente = paciente;
@@ -102,11 +101,11 @@ public class Turno implements Serializable {
 		this.id = id;
 	}
 
-	public Date getFechaHoraTurno() {
+	public LocalDateTime getFechaHoraTurno() {
 		return fechaHoraTurno;
 	}
 
-	public void setFechaHoraTurno(Date fechaHoraTurno) {
+	public void setFechaHoraTurno(LocalDateTime fechaHoraTurno) {
 		this.fechaHoraTurno = fechaHoraTurno;
 	}
 
@@ -147,26 +146,51 @@ public class Turno implements Serializable {
 		this.tipoPatologia = tipoPatologia.getCodigo();
 	}
 	
+	
+	public TipoEstadoTurno getTipoEstado() throws InvalidEntityDataException {
+		try {
+			return TipoEstadoTurno.toEnum(codigoEstado);
+			
+		} catch (TipoEstadoTurnoException e) {
+			throw new InvalidEntityDataException( "Etado turno invalido");
+		}
+	}
+	
+	public void setTipoEstado(TipoEstadoTurno tipoEstadoTurno) throws InvalidEntityDataException {
+		
+		this.codigoEstado = tipoEstadoTurno.getCodigo();
+	
+	}
 	public EstadoTurno getEstado() throws InvalidEntityDataException {
 		
 		try {
 			switch ( TipoEstadoTurno.toEnum(codigoEstado) ) {
 				case LIBRE: 
 					return EstadoTurnoLibre.getInstance();
-				case RESERVADO: 
-					return EstadoTurnoReservado.getInstance();
+				case PENDIENTE_CONFIRMACION: 
+					return EstadoTurnoPendienteConfirReservado.getInstance();
 				case CONFIRMADA: 
 					return EstadoTurnoConfirmado.getInstance();
-				case AUSENTE: 
-					return EstadoTurnoAusente.getInstance();
 				default: 
-					throw new TipoEstadoTurnoException( "Etado turno invalido");
+					throw new InvalidEntityDataException( "Etado turno invalido");
 			}
 			
 		} catch (TipoEstadoTurnoException e) {
 			throw new InvalidEntityDataException( "Etado turno invalido", e);
 		}
 		
+	}
+	
+	public void reservar() throws TipoEstadoTurnoException{
+		this.getEstado().reservar(this);
+	}
+	
+	public void cancelar() throws TipoEstadoTurnoException{
+		this.getEstado().cancelar(this);
+	}
+	
+	public void confirmarAsistencia() throws TipoEstadoTurnoException{
+		this.getEstado().confirmar(this);
 	}
 
 }

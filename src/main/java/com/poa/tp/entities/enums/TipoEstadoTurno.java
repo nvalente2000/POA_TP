@@ -4,10 +4,9 @@ import com.poa.tp.entities.exceptions.TipoEstadoTurnoException;
 
 public enum TipoEstadoTurno {
 
-	LIBRE		(1, "Turno Libre"),
-	RESERVADO	(2, "Turno reservado"),
-	CONFIRMADA	(3, "Turno confirmado. El paciente asistio a la consulta."),
-	AUSENTE		(4, "Turno Ausente. El no paciente asistio a la consulta."); 
+	LIBRE						(1, "Turno Libre"),
+	PENDIENTE_CONFIRMACION		(2, "Turno pendiente confirmacion."),
+	CONFIRMADA					(3, "Turno confirmado. El paciente asistio a la consulta."); 
 	
 	private int codigo; 
 	private String descripcion;
